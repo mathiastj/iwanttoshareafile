@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <title>P2P File Sharing</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="../styles.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.18/peer.min.js"></script>
+    <script>
+        // Connect to PeerJS, have server assign an ID instead of providing one
+        // Showing off some of the configs available with PeerJS :).
+        var peer = new Peer(null, { 
+            // Set API key for cloud server (you don't need this if you're running your
+            // own.
+            // key: 'lwjd5qra8257b9',
+
+            // Set highest debug level (log everything!).
+            debug: 3,
+
+            // Set a logging function:
+            logFunction: function() {
+                var copy = Array.prototype.slice.call(arguments).join(' ');
+                $('.log').append(copy + '<br>');
+            }
+        });
+        
+        var connectedPeers = {};
+
+        window.onload = function() {
+            connectImmediately();
+        };
+
+        peer.on('open', function(id) {
+            $('#pid').text('File will be here when download is complete');
+        });
+
+        // Await connections from others
+        peer.on('connection', connect);
+
+        peer.on('error', function(err) {
+            console.log(err);
+        })
+
+        // Handle a connection object.
+        function connect(c) {
+            // Handle file channel
+            if (c.label === 'file') {
+                c.on('data', function(data) {
+                    // If we're getting a file, create a URL for it.
+                    if (data.constructor === ArrayBuffer) {
+                        var dataView = new Uint8Array(data);
+                        var dataBlob = new Blob([dataView]);
+                        var url = window.URL.createObjectURL(dataBlob);
+                        $('#pid').text('');
+                        $("<a/>").attr({href: url}).html("Download complete &mdash; click here get it!").appendTo('#pid');
+                    }
+                });
+            }
+            connectedPeers[c.peer] = 1;
+        }
+
+        // Connect to a peer immediately
+        function connectImmediately() {
+            var requestedPeer = window.location.hash.substring(1);
+            if (!connectedPeers[requestedPeer]) {
+                var f = peer.connect(requestedPeer, {
+                    label: 'file',
+                    reliable: true
+                });
+                f.on('open', function() {
+                    connect(f);
+                });
+                f.on('error', function(err) {
+                    alert(err);
+                });
+            }
+            connectedPeers[requestedPeer] = 1;
+        }
+
+        // Make sure things clean up properly.
+        window.onunload = window.onbeforeunload = function(e) {
+            if (!!peer && !peer.destroyed) {
+                peer.destroy();
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <div id="everything">
+        <h1>P2P File Sharing</h1>
+
+        <p>A file is being shared with you.</p>
+
+        <div id="actions" class="boxed">
+            <span id="pid"></span><br>
+        </div>
+
+        <p class="log">
+            <strong>Connection status</strong>:<br>
+        </div>
+    </div>
+</body>
+
+</html>

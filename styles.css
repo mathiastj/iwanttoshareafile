@@ -1,0 +1,47 @@
+body {
+  font-family: 'Open Sans', 'sans serif';
+}
+
+h1 {
+  text-align: center;
+}
+
+a {
+  text-decoration: none !important;
+  color: black;
+}
+
+input[type=text] {
+  border: 1px solid black;
+  border-radius: 4px;
+  font-family: 'Open Sans', 'sans serif';
+  padding: 4px 4px;
+}
+
+.boxed {
+  border: 1px solid black;
+  border-radius: 4px;
+  font-size: 18px;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+#fileInput {
+  display: none;
+}
+
+#shareLink {
+  padding: 30px 30px;
+  text-align: center;
+}
+
+#copyButton {
+  padding: 1px 1px;
+}
+
+@media only screen and (min-width: 400px) {
+  #everything {
+    margin: auto;
+    max-width: 400px;
+  }
+}
