@@ -6,3 +6,4 @@ Requires that the tabs are kept open in both browsers while the transfer is in p
 
 Try it at: https://mathiastj.github.io/iwanttoshareafile/
 
+Does not work on iOS.
