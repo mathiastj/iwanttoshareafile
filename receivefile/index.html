@@ -56,12 +56,11 @@
             if (c.label === 'file') {
                 c.on('data', function(data) {
                     // If we're getting a file, create a URL for it.
-                    if (data.constructor === ArrayBuffer) {
-                        var dataView = new Uint8Array(data);
-                        var dataBlob = new Blob([dataView]);
+                    if (data.file.constructor === ArrayBuffer) {
+                        var dataBlob = new Blob([data.file], {type: data.filetype});
                         var url = window.URL.createObjectURL(dataBlob);
                         $('#pid').text('');
-                        $("<a/>").attr({href: url}).html("Download complete &mdash; click here get it!").appendTo('#pid');
+                        $("<a/>").attr({href: url}).html("Download complete &mdash; click here get it!").attr({download: data.filename}).appendTo('#pid');
                     }
                 });
             }
@@ -112,3 +111,5 @@
 </body>
 
 </html>
+
+

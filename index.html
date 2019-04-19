@@ -38,7 +38,7 @@
         };
 
         var connectedPeers = {};
-        var fileToBeSend = {};
+        var fileAndInfo = {};
 
         // Show file sharing link
         peer.on('open', function(id) {
@@ -56,7 +56,7 @@
             // As soon as channel is open send file
             if (c.label === 'file') {
                 c.on('open', function() {
-                    c.send(fileToBeSend);
+                    c.send(fileAndInfo);
                 });
             }
             connectedPeers[c.peer] = 1;
@@ -69,13 +69,23 @@
             box.on('dragover', doNothing);
             box.on('drop', function(e) {
                 e.originalEvent.preventDefault();
-                fileToBeSend = e.originalEvent.dataTransfer.files[0];
+                var file = e.originalEvent.dataTransfer.files[0];
+                fileAndInfo = {
+                    file: new Blob([file], {type: file.type}),
+                    filename: file.name,
+                    filetype: file.type
+                };
                 $('#shareLink').show();
             });
                   
             // User added file
             $("#fileInput").change(function () {
-                fileToBeSend = $("#fileInput")[0].files[0];
+                var file = $("#fileInput")[0].files[0];
+                fileAndInfo = {
+                    file: new Blob([file], {type: file.type}),
+                    filename: file.name,
+                    filetype: file.type
+                };
                 $('#shareLink').show();
             });
 
